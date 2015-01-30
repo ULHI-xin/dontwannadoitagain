@@ -76,7 +76,7 @@ Bundle 'bling/vim-airline'
 
 " Python mode (indentation, doc, refactor, lints, code checking, motion and
 " operators, highlighting, run and ipdb breakpoints)
-"Bundle 'klen/python-mode'
+Bundle 'klen/python-mode'
 
 " Better autocompletion
 Bundle 'Shougo/neocomplcache.vim'
@@ -350,6 +350,9 @@ let g:ctrlp_custom_ignore = {
 " show list of errors and warnings on the current file
 nmap <leader>e :Errors<CR>
 " check also when just opened the file
+let g:syntastic_mode_map = {
+        \ "mode": "passive",
+        \ "passive_filetypes": ["py"] }
 let g:syntastic_check_on_open = 0 
 " don't put icons on the sign column (it hides the vcs status icons of signify)
 let g:syntastic_enable_signs = 0 
@@ -363,18 +366,12 @@ let g:syntastic_style_warning_symbol = '⚠'
 " Python-mode ------------------------------
 
 " don't use linter, we use syntastic for that
-"let g:pymode_lint_on_write = 0
-"let g:pymode_lint_signs = 0
-"" don't fold python code on open
-"let g:pymode_folding = 0
-"" don't load rope by default. Change to 1 to use rope
-"let g:pymode_rope = 0
-"" open definitions on same window, and custom mappings for definitions and
-"" occurrences
-"let g:pymode_rope_goto_definition_bind = ',d'
-"let g:pymode_rope_goto_definition_cmd = 'e'
-"nmap ,D :tab split<CR>:PymodePython rope.goto()<CR>
-"nmap ,o :RopeFindOccurrences<CR>
+let g:pymode_lint_on_write = 0
+let g:pymode_lint_signs = 0
+" don't fold python code on open
+let g:pymode_folding = 0
+" don't load rope by default. Change to 1 to use rope
+let g:pymode_rope = 0
 
 " NeoComplCache ------------------------------
 
