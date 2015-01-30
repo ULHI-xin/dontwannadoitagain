@@ -177,6 +177,11 @@ set incsearch
 " highlighted search results
 set hlsearch
 
+" smartcase search
+set ignorecase
+set smartcase
+set incsearch
+
 " syntax highlight on
 syntax on
 
