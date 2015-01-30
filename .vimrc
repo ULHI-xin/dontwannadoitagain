@@ -151,6 +151,8 @@ endif
 " Vim settings and mappings
 " You can edit them as you wish
 
+set ffs=unix,dos
+
 " relative number
 set relativenumber
 
@@ -354,13 +356,15 @@ let g:ctrlp_custom_ignore = {
 
 " show list of errors and warnings on the current file
 nmap <leader>e :Errors<CR>
+nmap ,c :SyntasticCheck<CR>
+nmap ,r :SyntasticReset<CR>
 " check also when just opened the file
 let g:syntastic_mode_map = {
         \ "mode": "passive",
         \ "passive_filetypes": ["py"] }
 let g:syntastic_check_on_open = 0 
 " don't put icons on the sign column (it hides the vcs status icons of signify)
-let g:syntastic_enable_signs = 0 
+let g:syntastic_enable_signs = 1 
 " custom icons (enable them if you use a patched font, and enable the previous 
 " setting)
 let g:syntastic_error_symbol = '✗'
