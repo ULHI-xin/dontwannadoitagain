@@ -76,10 +76,10 @@ Bundle 'bling/vim-airline'
 
 " Python mode (indentation, doc, refactor, lints, code checking, motion and
 " operators, highlighting, run and ipdb breakpoints)
-Bundle 'klen/python-mode'
+"Bundle 'klen/python-mode'
 
 " Better autocompletion
-"Bundle 'Shougo/neocomplcache.vim'
+Bundle 'Shougo/neocomplcache.vim'
 
 " fugitive
 Bundle 'tpope/vim-fugitive'
@@ -98,7 +98,7 @@ Bundle 'mhinz/vim-signify'
 " Window chooser
 "Bundle 't9md/vim-choosewin'
 " Python and other languages code checker
-"Bundle 'scrooloose/syntastic'
+Bundle 'scrooloose/syntastic'
 " Paint css colors with the real color
 "Bundle 'lilydjwg/colorizer'
 
@@ -121,6 +121,19 @@ Bundle 'mhinz/vim-signify'
 "Bundle 'YankRing.vim'
 
 Bundle 'altercation/vim-colors-solarized'
+
+" Auto complete
+"Plugin 'davidhalter/jble omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" Enable heavy omni completion.
+if !exists('g:neocomplcache_force_omni_patterns')
+  let g:neocomplcache_force_omni_patterns = {}
+endif
 
 " Bundle 'python-rope/ropevim'
 
@@ -197,7 +210,7 @@ syntax on
 " Comment this line to enable autocompletion preview window
 " (displays documentation related to the selected completion option)
 " Disabled by default because preview makes the window flicker
-set completeopt-=preview
+"set completeopt-=preview
 
 " save as sudo
 "ca w!! w !sudo tee "%"
@@ -337,9 +350,9 @@ let g:ctrlp_custom_ignore = {
 " show list of errors and warnings on the current file
 nmap <leader>e :Errors<CR>
 " check also when just opened the file
-let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_open = 0 
 " don't put icons on the sign column (it hides the vcs status icons of signify)
-let g:syntastic_enable_signs = 0
+let g:syntastic_enable_signs = 0 
 " custom icons (enable them if you use a patched font, and enable the previous 
 " setting)
 let g:syntastic_error_symbol = '✗'
@@ -350,39 +363,49 @@ let g:syntastic_style_warning_symbol = '⚠'
 " Python-mode ------------------------------
 
 " don't use linter, we use syntastic for that
-let g:pymode_lint_on_write = 0
-let g:pymode_lint_signs = 0
-" don't fold python code on open
-let g:pymode_folding = 0
-" don't load rope by default. Change to 1 to use rope
-let g:pymode_rope = 0
-" open definitions on same window, and custom mappings for definitions and
-" occurrences
-let g:pymode_rope_goto_definition_bind = ',d'
-let g:pymode_rope_goto_definition_cmd = 'e'
-nmap ,D :tab split<CR>:PymodePython rope.goto()<CR>
-nmap ,o :RopeFindOccurrences<CR>
+"let g:pymode_lint_on_write = 0
+"let g:pymode_lint_signs = 0
+"" don't fold python code on open
+"let g:pymode_folding = 0
+"" don't load rope by default. Change to 1 to use rope
+"let g:pymode_rope = 0
+"" open definitions on same window, and custom mappings for definitions and
+"" occurrences
+"let g:pymode_rope_goto_definition_bind = ',d'
+"let g:pymode_rope_goto_definition_cmd = 'e'
+"nmap ,D :tab split<CR>:PymodePython rope.goto()<CR>
+"nmap ,o :RopeFindOccurrences<CR>
 
 " NeoComplCache ------------------------------
 
 " most of them not documented because I'm not sure how they work
 " (docs aren't good, had to do a lot of trial and error to make 
 " it play nice)
+"let g:neocomplcache_enable_at_startup = 1
+"let g:neocomplcache_enable_ignore_case = 0
+"let g:neocomplcache_enable_smart_case = 1
+"let g:neocomplcache_enable_auto_select = 0
+"let g:neocomplcache_enable_fuzzy_completion = 1
+"let g:neocomplcache_enable_camel_case_completion = 1
+"let g:neocomplcache_enable_underbar_completion = 1
+"let g:neocomplcache_fuzzy_completion_start_length = 1
+"let g:neocomplcache_auto_completion_start_length = 1
+"let g:neocomplcache_manual_completion_start_length = 1
+"let g:neocomplcache_min_keyword_length = 1
+"let g:neocomplcache_min_syntax_length = 1
+"" complete with workds from any opened file
+"let g:neocomplcache_same_filetype_lists = {}
+"let g:neocomplcache_same_filetype_lists._ = '_'
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplcache.
 let g:neocomplcache_enable_at_startup = 1
-let g:neocomplcache_enable_ignore_case = 0
+" Use smartcase.
 let g:neocomplcache_enable_smart_case = 1
-let g:neocomplcache_enable_auto_select = 0
-let g:neocomplcache_enable_fuzzy_completion = 1
-let g:neocomplcache_enable_camel_case_completion = 1
-let g:neocomplcache_enable_underbar_completion = 1
-let g:neocomplcache_fuzzy_completion_start_length = 1
-let g:neocomplcache_auto_completion_start_length = 1
-let g:neocomplcache_manual_completion_start_length = 1
-let g:neocomplcache_min_keyword_length = 1
-let g:neocomplcache_min_syntax_length = 1
-" complete with workds from any opened file
-let g:neocomplcache_same_filetype_lists = {}
-let g:neocomplcache_same_filetype_lists._ = '_'
+" Set minimum syntax keyword length.
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+
 
 " TabMan ------------------------------
 
