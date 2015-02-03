@@ -381,6 +381,8 @@ let g:pymode_lint_signs = 0
 let g:pymode_folding = 0
 " don't load rope by default. Change to 1 to use rope
 let g:pymode_rope = 0
+" trim unused white space on save
+let g:pymode_trim_whitespaces = 0
 
 " NeoComplCache ------------------------------
 
