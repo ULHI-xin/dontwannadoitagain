@@ -189,6 +189,7 @@ set incsearch
 " syntax highlight on
 syntax on
 
+nmap ,tw /\s\+$<CR>
 " show line numbers
 "set nu
 
