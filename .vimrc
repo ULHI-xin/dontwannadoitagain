@@ -189,7 +189,16 @@ set incsearch
 " syntax highlight on
 syntax on
 
+" check trailing whitespace
 nmap ,tw /\s\+$<CR>
+
+" fast disable/re-enable all tests
+nmap ,dt :%s/def test_/def __test_/g<CR>
+nmap ,rt :%s/def __test_/def test_/g<CR>
+
+" map Ctrl+L to enter normal mode and trigger a trailing whitespace highlight
+imap <C-L> <ESC>,tw
+
 " show line numbers
 "set nu
 
