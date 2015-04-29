@@ -197,7 +197,7 @@ nmap ,dt :%s/def test_/def __test_/g<CR>
 nmap ,rt :%s/def __test_/def test_/g<CR>
 
 " map Ctrl+L to enter normal mode and trigger a trailing whitespace highlight
-imap <C-L> <ESC>,tw
+imap <ESC><ESC> <ESC>,tw
 
 " show line numbers
 "set nu
