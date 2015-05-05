@@ -106,8 +106,8 @@ Bundle 'scrooloose/syntastic'
 
 " Relative numbering of lines (0 is the current line)
 " (disabled by default because is very intrusive and can't be easily toggled
-" on/off. When the plugin is present, will always activate the relative 
-" numbering every time you go to normal mode. Author refuses to add a setting 
+" on/off. When the plugin is present, will always activate the relative
+" numbering every time you go to normal mode. Author refuses to add a setting
 " to avoid that)
 " Bundle 'myusuf3/numbers.vim'
 
@@ -196,8 +196,8 @@ nmap ,tw /\s\+$<CR>
 nmap ,dt :%s/def test_/def __test_/g<CR>
 nmap ,rt :%s/def __test_/def test_/g<CR>
 
-" map Ctrl+L to enter normal mode and trigger a trailing whitespace highlight
-imap <ESC><ESC> <ESC>,tw
+" try searching trailing whitespace after :w
+autocmd BufWritePost * /\s\+$
 
 " show line numbers
 "set nu
