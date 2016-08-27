@@ -66,8 +66,27 @@ cfg = {
     'pm':
         ['http://g.e-hentai.org/s/0b1f472a29/642078-161',
          '/Users/xinzhao/HEHE/physical_message',
-         'uconfig=uh_y-lt_m-rc_0-tl_r-cats_0-xns_0-ts_m-tr_2-prn_y-dm_l-ar_0-rx_0-ry_0-ms_n-mt_n-cs_a-fs_p-to_a-pn_0-sc_0-ru_rrggb-xr_a-sa_y-oi_n-qb_n-tf_n-hh_-hp_-hk_-xl_; expires=Sun, 13-Aug-2017 09:53:16 GMT; Max-Age=31536000; path=/; domain=.e-hentai.org']
+         'uconfig=uh_y-lt_m-rc_0-tl_r-cats_0-xns_0-ts_m-tr_2-prn_y-dm_l-ar_0'
+         '-rx_0-ry_0-ms_n-mt_n-cs_a-fs_p-to_a-pn_0-sc_0-ru_rrggb-xr_a-sa_y-oi_n-qb_n-tf_n-hh_-hp_-hk_-xl_; expires=Sun, 13-Aug-2017 09:53:16 GMT; Max-Age=31536000; path=/; domain=.e-hentai.org'],
+    'sc1':
+        [
+            'http://g.e-hentai.org/s/c423e61f7f/852436-1',
+            '/Users/xinzhao/HEHE/sc1',
+            'uconfig=uh_y-lt_m-rc_0-tl_r-cats_0-xns_0-ts_m-tr_2-prn_y-dm_l-ar_0-rx_0-ry_0-ms_n-mt_n-cs_a-fs_p-to_a-pn_0-sc_0-ru_rrggb-xr_a-sa_y-oi_n-qb_n-tf_n-hh_-hp_-hk_-xl_; expires=Sun, 13-Aug-2017 09:42:35 GMT; Max-Age=31536000; path=/; domain=.e-hentai.org',
+        ],
 }
+
+
+def run_args(url, dst):
+    ck = cfg['snh'][2]
+    for _ in xrange(500):
+        page, cookie = _html_from_url(url, ck)
+        next_page, img_url = _next_urls_from_html(page)
+        _download_img(img_url, dst, cookie)
+        if next_page == url:
+            print "FINISHED!"
+            break
+        url = next_page
 
 
 def run(name):
@@ -84,4 +103,7 @@ def run(name):
 
 import sys
 
-run(sys.argv[1])
+if len(sys.argv) == 2:
+    run(sys.argv[1])
+else:
+    run_args(sys.argv[1], sys.argv[2])
