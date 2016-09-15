@@ -34,24 +34,29 @@ def _next_urls_from_html(html):
     return next_page, img_url
 
 
-def _download_img(url, dst, cookie):
+def _download_img(url, dst, idx):
     print "download ", url
+    ctnt = None
     for _ in xrange(5):
         print "_try ", _
         try:
             resp, ctnt = hc.request(url)
             if '200' == resp.get('status'):
                 break
-        except:
+        except Exception as e:
+            print "Download failed: ", e
             continue
 
     # print ctnt
-    filename = url[url.rfind('/'):]
-    try:
-        with open(dst + filename, 'wb') as f:
-            f.write(ctnt)
-    except:
-        pass
+    if ctnt is None:
+        print "Failed img:", url
+        return
+    extname = url[url.rfind('.'):]
+    filename = str(idx) + extname
+    if not dst.endswith('/'):
+        dst += "/"
+    with open(dst + filename, 'wb') as f:
+        f.write(ctnt)
 
 
 cfg = {
@@ -82,7 +87,7 @@ def run_args(url, dst):
     for _ in xrange(500):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
-        _download_img(img_url, dst, cookie)
+        _download_img(img_url, dst, url[url.rfind('-')+1:])
         if next_page == url:
             print "FINISHED!"
             break
@@ -94,7 +99,7 @@ def run(name):
     for _ in xrange(500):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
-        _download_img(img_url, dst, cookie)
+        _download_img(img_url, dst, url[url.rfind('-')+1:])
         if next_page == url:
             print "FINISHED!"
             break
