@@ -1,4 +1,5 @@
 import re
+import subprocess as sub
 from httplib2 import Http
 
 h = Http()
@@ -55,8 +56,15 @@ def _download_img(url, dst, idx):
     filename = str(idx) + extname
     if not dst.endswith('/'):
         dst += "/"
-    with open(dst + filename, 'wb') as f:
-        f.write(ctnt)
+    try:
+        with open(dst + filename, 'wb') as f:
+            f.write(ctnt)
+    except IOError:
+        p = sub.Popen(['mkdir', '-p', dst], stdout=sub.PIPE,
+                      stderr=sub.PIPE)
+        output, errors = p.communicate()
+        with open(dst + filename, 'wb') as f:
+            f.write(ctnt)
 
 
 cfg = {
