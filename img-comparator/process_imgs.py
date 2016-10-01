@@ -383,9 +383,9 @@ s = [(1, '{\"md\": \"##Lady Gaga\\n\\nNo one is more avant-garde than Lady '
 def _img_size(url):
     try:
         with closing(requests.get(url, stream=True)) as r:
-            size = r.headers.get('content-size')
+            size = r.headers.get('content-length')
             if not size:
-                size = r.headers.get('Content-Size')
+                size = r.headers.get('Content-Length')
             if not size:
                 return None
             else:
@@ -403,7 +403,7 @@ def _img(t):
 
 with open('/Users/xinzhao/Desktop/gem_urls', 'w') as fw:
 	for l in s:
-		print l
 		u = _img(l[1])
-		size = _img_size(u) if u else None
-		fw.write("%s,%s,%s" % (l[0], size, u))
+		print u
+		_size = _img_size(u) if u else None
+		fw.write("%s,%s,%s\n" % (l[0], _size, u))
