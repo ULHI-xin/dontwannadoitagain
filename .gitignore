@@ -2,4 +2,6 @@ eh-scrawler/.cache
 eh-scrawler/.idea
 *.pyc
 .idea/*
+.idea
+.cache
 
