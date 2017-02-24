@@ -136,6 +136,6 @@ function supminlx {
     sudo supdctl stop zoe-www
     sudo supdctl stop thumbor
     sudo supdctl stop bryo-etad
-    sudo supdctl stop gorum-etad
+    sudo supdctl stop forum-etad
     sudo supdctl stop lexie-etad
 }
