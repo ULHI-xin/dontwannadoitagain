@@ -8,14 +8,16 @@ hc = Http('.cache')
 
 def _html_from_url(url, cookie):
     print "visit url", url
-    for _ in xrange(10):
+    for _ in xrange(5):
         print "_try ", _
         try:
-            headers = {'Set-Cookie': cookie}
+            headers = {'Cookie': cookie}
             resp, ctnt = h.request(url, headers=headers)
             if '200' == resp.get('status'):
-                return ctnt, resp['set-cookie']
-        except:
+                return ctnt, resp.get('set-cookie', cookie)
+            ## print resp, ctnt
+        except Excption as e:
+            print '%r' % e
             continue
 
 
@@ -38,7 +40,7 @@ def _next_urls_from_html(html):
 def _download_img(url, dst, idx):
     print "download ", url
     ctnt = None
-    for _ in xrange(5):
+    for _ in xrange(3):
         print "_try ", _
         try:
             resp, ctnt = hc.request(url)
@@ -91,7 +93,7 @@ cfg = {
 
 
 def run_args(url, dst):
-    ck = cfg['snh'][2]
+    ck = "tips=1; __utma=185428086.1372950640.1477723685.1478415126.1480141868.5; __utmc=185428086; __utmz=185428086.1477723685.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); eap_45442=1"
     for _ in xrange(500):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
