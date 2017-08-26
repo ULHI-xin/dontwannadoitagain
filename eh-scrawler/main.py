@@ -16,12 +16,14 @@ def _html_from_url(url, cookie):
             if '200' == resp.get('status'):
                 return ctnt, resp.get('set-cookie', cookie)
             ## print resp, ctnt
-        except Excption as e:
+        except Exception as e:
             print '%r' % e
             continue
 
 
 def _next_urls_from_html(html):
+    html = html.replace(' id="img"', '')
+    html = re.sub(' onclick="[^"]+"', '', html)
     print "find urls"
     # print html
     pat = '<a [^>]+><img src="[^"]+\.[a-z][a-z][a-z]" style="[^"]+"[^/]+ ?/></a>'
@@ -93,7 +95,7 @@ cfg = {
 
 
 def run_args(url, dst):
-    ck = "tips=1; __utma=185428086.1372950640.1477723685.1478415126.1480141868.5; __utmc=185428086; __utmz=185428086.1477723685.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); eap_45442=1"
+    ck = "__cfduid=d0d4f1422f7ed0333fb6106bf992f3e441488450044"
     for _ in xrange(500):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
