@@ -16,7 +16,7 @@ def _html_from_url(url, cookie):
             if '200' == resp.get('status'):
                 return ctnt, resp.get('set-cookie', cookie)
             ## print resp, ctnt
-        except Excption as e:
+        except Exception as e:
             print '%r' % e
             continue
 
@@ -24,16 +24,22 @@ def _html_from_url(url, cookie):
 def _next_urls_from_html(html):
     print "find urls"
     # print html
-    pat = '<a [^>]+><img src="[^"]+\.[a-z][a-z][a-z]" style="[^"]+"[^/]+ ?/></a>'
+    # pat = '<a [^>]+><img src="[^"]+\.[a-z][a-z][a-z]" style="[^"]+"[^/]+ ?/></a>'
+    pat = '<a [^>]+><img id="img" [^>]+></a>'
     try:
-        spliteds = re.findall(
+        tag = re.findall(
             pat,
-            html)[0].split('"')
+            html)[0]
+        # print tag
+        next_page = re.findall('href="[^"]+"', tag)[0][6:-1]
+        img_url = re.findall('src="[^"]+"', tag)[0][5:-1]
+
     except IndexError as e:
         print html
         raise e
-    next_page = spliteds[1]
-    img_url = spliteds[3]
+    # next_page = spliteds[1]
+    # img_url = spliteds[3]
+    print "next page:", next_page
     return next_page, img_url
 
 
@@ -116,9 +122,27 @@ def run(name):
         url = next_page
 
 
+def run_img_url_only(dst, start_url):
+    p = sub.Popen(['mkdir', '-p', dst.replace('.', '_')], stdout=sub.PIPE,
+                  stderr=sub.PIPE)
+    ck = "tips=1; __utma=185428086.1372950640.1477723685.1478415126.1480141868.5; __utmc=185428086; __utmz=185428086.1477723685.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); eap_45442=1"
+    ck = "skipserver=18683-17302_14188-17301_17879-17301; __cfduid=d0acb48934e768c96bb08275951098e0c1494255264; nw=1; eap_45442=1"
+    with open(dst, 'a') as fa:
+        for _ in xrange(500):
+            page, cookie = _html_from_url(start_url, ck)
+            next_page, img_url = _next_urls_from_html(page)
+            fa.write('%s\n' % img_url)
+            if next_page == start_url:
+                print "FINISHED!"
+                break
+            start_url = next_page
+
+
 import sys
 
-if len(sys.argv) == 2:
+if len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
+    run_img_url_only(sys.argv[3], sys.argv[2])
+elif len(sys.argv) == 2:
     run(sys.argv[1])
 else:
     run_args(sys.argv[1], sys.argv[2])
