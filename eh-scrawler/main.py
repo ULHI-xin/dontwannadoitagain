@@ -37,8 +37,17 @@ def _next_urls_from_html(html):
         img_url = re.findall('src="[^"]+"', tag)[0][5:-1]
 
     except IndexError as e:
-        print html
-        raise e
+        pat = '<a [^>]+><img src="[^"]+\.[a-z][a-z][a-z]" style="[^"]+"[^/]+ ?/></a>'
+        try:
+            tag = re.findall(
+                pat,
+                html)[0]
+            # print tag
+            next_page = re.findall('href="[^"]+"', tag)[0][6:-1]
+            img_url = re.findall('src="[^"]+"', tag)[0][5:-1]
+        except IndexError as e:
+            print html
+            raise e
     # next_page = spliteds[1]
     # img_url = spliteds[3]
     print "next page:", next_page
@@ -64,6 +73,7 @@ def _download_img(url, dst, idx):
         return
     extname = url[url.rfind('.'):]
     filename = str(idx) + extname
+    dst = "/Users/xinzhao/.hehe/" + dst if '/' not in dst else dst
     if not dst.endswith('/'):
         dst += "/"
     try:
