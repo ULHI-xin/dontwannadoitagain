@@ -112,7 +112,7 @@ cfg = {
 
 def run_args(url, dst):
     ck = "__cfduid=d0d4f1422f7ed0333fb6106bf992f3e441488450044"
-    for _ in xrange(500):
+    for _ in xrange(1500):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
         _download_img(img_url, dst, url[url.rfind('-')+1:])
@@ -124,7 +124,7 @@ def run_args(url, dst):
 
 def run(name):
     url, dst, ck = cfg[name]
-    for _ in xrange(500):
+    for _ in xrange(1500):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
         _download_img(img_url, dst, url[url.rfind('-')+1:])
@@ -140,7 +140,7 @@ def run_img_url_only(dst, start_url):
     ck = "tips=1; __utma=185428086.1372950640.1477723685.1478415126.1480141868.5; __utmc=185428086; __utmz=185428086.1477723685.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); eap_45442=1"
     ck = "skipserver=18683-17302_14188-17301_17879-17301; __cfduid=d0acb48934e768c96bb08275951098e0c1494255264; nw=1; eap_45442=1"
     with open(dst, 'a') as fa:
-        for _ in xrange(500):
+        for _ in xrange(1500):
             page, cookie = _html_from_url(start_url, ck)
             next_page, img_url = _next_urls_from_html(page)
             fa.write('%s\n' % img_url)
