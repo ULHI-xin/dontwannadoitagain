@@ -76,12 +76,24 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.60000002384185791" green="0.40000000596046448" blue="0.20000000298023224" alpha="1" colorSpace="calibratedRGB"/>
                             </imageView>
+                            <view alpha="0.20000000000000001" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fJf-N9-d4B" userLabel="CLine Overlay">
+                                <rect key="frame" x="67" y="516" width="240" height="66"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wGk-xW-903" userLabel="Plot">
+                                <rect key="frame" x="62" y="378" width="250" height="98"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="cLineOverlay" destination="fJf-N9-d4B" id="18R-r9-5b2"/>
                         <outlet property="opkFrameView" destination="Zph-Gi-zFM" id="vut-AO-s6m"/>
+                        <outlet property="plotView" destination="wGk-xW-903" id="TFG-mU-Ef0"/>
                         <outlet property="previewView" destination="RT4-uO-Ngz" id="0cL-DU-J11"/>
                         <outlet property="recognizedImage" destination="BQg-jj-bDL" id="25X-4a-BZb"/>
                         <outlet property="recognizedImage2" destination="pcf-G9-nMR" id="G4J-aJ-yro"/>

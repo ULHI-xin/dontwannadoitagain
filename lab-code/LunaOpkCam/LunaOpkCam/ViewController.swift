@@ -8,6 +8,14 @@
 import AVFoundation
 import UIKit
 
+let C_STD_VARIANCE: CGFloat = 0.4
+let C_DIFF: CGFloat = 10
+let SMOOTH_SIZE: Int = 5
+let CONF_LEVEL: CGFloat = 0.6
+let C_WIDTH_MIN: Int = 8
+let C_WIDTH_MAX: Int = 18
+let C_STD: CGFloat = 6
+
 struct m_RGBColor // My own data-type to hold the picture information
 {
     var Alpha: UInt8 = 255
@@ -19,6 +27,9 @@ struct m_RGBColor // My own data-type to hold the picture information
 class LnMath {
     static func mean(a: [CGFloat]) -> CGFloat {
         return a.reduce(0, +) / CGFloat(a.count)
+    }
+    static func rangedMean(a: [CGFloat], start: Int, end: Int) -> CGFloat {
+        return a[start..<end].reduce(0, +) / CGFloat(end - start)
     }
 
     /* std = sqrt(mean(abs(x - x.mean())**2)) */
@@ -57,6 +68,84 @@ class LnMath {
         }
         return result
     }
+    static func centerWindowRollingMean(a: [CGFloat], w: Int) -> [CGFloat] {
+        let lExt = w / 2, rExt = w % 2 == 1 ? w / 2 : w / 2 - 1
+        return a.enumerated().map({ (idx, v) -> CGFloat in
+            if idx - lExt < 0 || idx + rExt >= a.count {
+                return CGFloat.nan
+            } else {
+                return a[idx - lExt ... idx + rExt].reduce(0, +) / CGFloat(w)
+            }
+        })
+    }
+}
+
+class LineDetector {
+    static func findPosRegion(s: [CGFloat], minW: Int, maxW: Int,
+            confLv: CGFloat = CONF_LEVEL, smooth: Int = SMOOTH_SIZE) -> [[String: CGFloat]] {
+        let smoothed = LnMath.centerWindowRollingMean(a: s, w: smooth)
+        var regions: [[String: CGFloat]] = []
+        var start = -1, end = -1
+        for i in 0 ..< smoothed.count {
+            if smoothed[i] <= 0.000001 && start >= 0 {
+                end = i
+                let w = end - start
+                let area = LnMath.rangedMean(a: smoothed, start: start, end: end)
+                if minW < w && w < maxW && area > confLv {
+                    regions.append(["start": CGFloat(start), "end": CGFloat(end), "width": CGFloat(w), "val": area])
+                }
+                start = -1
+                end = -1
+            } else if smoothed[i] > 0 && start < 0 {
+                start = i
+            }
+        }
+        if start >= 0 {
+            end = smoothed.count
+            let w = end - start
+            let area = LnMath.rangedMean(a: smoothed, start: start, end: end)
+            if minW < w && w < maxW && area > confLv {
+                regions.append(["start": CGFloat(start), "end": CGFloat(end), "width": CGFloat(w), "val": area])
+            }
+        }
+        return regions
+    }
+
+    static func cLineLeftRight(pixels: [UInt8], w: Int) -> [String: Any] {
+        let h = pixels.count / w
+//        let yStart = h * 3 / 8, yEnd = h * 5 / 8
+        let yStart = h * 5 / 12, yEnd = h * 7 / 12
+        let croppedPixels = pixels[yStart * w ..< yEnd * w].map { (p) -> CGFloat in CGFloat(p) }
+
+        let scnb = Scanable(pixels: croppedPixels, w: w)
+        if scnb.stdVar > C_STD_VARIANCE {
+            return ["rc": 1, "start": 0, "end": 0]
+        }
+        let isLine = scnb.diff.map { (d) -> CGFloat in d < -C_DIFF ? 1 : 0 }
+        let lines = self.findPosRegion(s: isLine, minW: C_WIDTH_MIN, maxW: C_WIDTH_MAX)
+
+        var result : [[String: CGFloat]] = []
+        for l in lines {
+            if CGFloat(w) * 0.5 <= l["start"]! && CGFloat(w) * 0.8 >= l["start"]! &&
+                    scnb.rangedStdMean(start: Int(l["start"]!), end: Int(l["end"]!)) < C_STD {
+                if result.count == 0 {
+                    result.append(l)
+                } else {
+                    return ["rc": 2, "start": 0, "end": 0,
+                            "isLine": isLine, "lines": lines,
+                            "std": scnb.std]
+                }
+            }
+        }
+        if result.count == 0 {
+            return ["rc": 3, "start": 0, "end": 0,
+                    "isLine": isLine, "lines": lines,
+                    "std": scnb.std]
+        }
+        return ["rc": 0, "start": Int(result[0]["start"]!), "end": Int(result[0]["end"]!),
+                "isLine": isLine, "lines": lines,
+                "std": scnb.std]
+    }
 }
 
 struct Scanable {
@@ -84,17 +173,24 @@ struct Scanable {
         })
         stdVar = LnMath.mean(a: LnMath.stdX(a: pixels, w: w, h: h)) / LnMath.std(a: pixels)
     }
+
+    func rangedStdMean(start: Int, end: Int) -> CGFloat {
+        return LnMath.rangedMean(a: self.std, start: start, end: end)
+    }
 }
 
 class ViewController: UIViewController {
     var captureSession: AVCaptureSession?
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
+    var intervalCtrl = 0
     @IBOutlet weak var previewView: UIView!
     @IBOutlet weak var searchArea: UIImageView!
     @IBOutlet weak var recognizedImage2: UIImageView!
     @IBOutlet weak var recognizedImage: UIImageView!
     @IBOutlet weak var opkFrameView: UIView!
     @IBOutlet weak var resultC: UIView!
+    @IBOutlet weak var cLineOverlay: UIView!
+    @IBOutlet weak var plotView: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -142,10 +238,12 @@ class ViewController: UIViewController {
  153]
         print("stdX")
         print(LnMath.stdX(a: s, w: 10, h: 4))
-        print("median")
+        print("median of stdX")
         print(LnMath.median(a: LnMath.stdX(a: s, w: 10, h: 4)))
         print("medianX")
         print(LnMath.medianX(a: s, w: 10, h: 4))
+        print("LnMath.centerWindowRollingMean(a: s, w: 3)")
+        print(LnMath.centerWindowRollingMean(a: s, w: 3))
 
         let scnb = Scanable(pixels: s, w: 10)
         print("scnb.stdMean")
@@ -156,6 +254,8 @@ class ViewController: UIViewController {
         print(scnb.std)
         print("scnb.stdVar")
         print(scnb.stdVar)
+        print("scnb.rangedStdMean(35, 79)")
+        print(scnb.rangedStdMean(start: 5, end: 9))
 
         opkFrameView.layer.borderColor = UIColor.cyan.cgColor
         opkFrameView.layer.borderWidth = 2.0
@@ -192,6 +292,53 @@ class ViewController: UIViewController {
 }
 
 extension ViewController : AVCaptureVideoDataOutputSampleBufferDelegate {
+    func plot(a: [CGFloat], b: [[String: CGFloat]], c: [CGFloat], min: CGFloat, max: CGFloat) {
+        for sublayer in plotView.layer.sublayers ?? [] {
+            sublayer.removeFromSuperlayer()
+        }
+        let line = CAShapeLayer()
+        let linePath = UIBezierPath()
+        linePath.move(to: CGPoint(x: 0, y: 0))
+        for (idx, p) in a.enumerated() {
+            linePath.addLine(to: CGPoint(x: CGFloat(idx), y: 100 * p / (max - min) + min))
+        }
+        linePath.addLine(to: CGPoint(x: 250, y: 0))
+        line.path = linePath.cgPath
+        line.strokeColor = UIColor.red.cgColor
+        line.fillColor = UIColor.clear.cgColor
+        line.lineWidth = 1
+
+        let line2 = CAShapeLayer()
+        let linePath2 = UIBezierPath()
+        linePath2.move(to: CGPoint(x: 0, y: 0))
+        for l in b {
+            linePath2.addLine(to: CGPoint(x: l["start"]!, y: 0))
+            linePath2.addLine(to: CGPoint(x: l["start"]!, y: 40))
+            linePath2.addLine(to: CGPoint(x: l["end"]!, y: 40))
+            linePath2.addLine(to: CGPoint(x: l["end"]!, y: 0))
+        }
+        linePath2.addLine(to: CGPoint(x: 250, y: 0))
+        line2.path = linePath2.cgPath
+        line2.strokeColor = UIColor.blue.cgColor
+        line2.fillColor = UIColor.clear.cgColor
+        line2.lineWidth = 1
+
+        let line3 = CAShapeLayer()
+        let linePath3 = UIBezierPath()
+        linePath3.move(to: CGPoint(x: 0, y: 0))
+        for (idx, p) in c.enumerated() {
+            linePath3.addLine(to: CGPoint(x: CGFloat(idx), y: 100 * p / (max - min) + min))
+        }
+        linePath3.addLine(to: CGPoint(x: 250, y: 0))
+        line3.path = linePath3.cgPath
+        line3.strokeColor = UIColor.green.cgColor
+        line3.fillColor = UIColor.clear.cgColor
+        line3.lineWidth = 1
+        plotView.layer.addSublayer(line)
+        plotView.layer.addSublayer(line2)
+        plotView.layer.addSublayer(line3)
+    }
+
     func convertImageToGrayScale(image: UIImage) -> UIImage {
         // Create image rectangle with current image width/height
         let imageRect: CGRect = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
@@ -216,7 +363,7 @@ extension ViewController : AVCaptureVideoDataOutputSampleBufferDelegate {
         return newImage
     }
 
-     func grayscaleImageIntensity(image: UIImage) -> [UInt8] {
+    func grayscaleImageIntensity(image: UIImage) -> [UInt8] {
         // Create image rectangle with current image width/height
         let imageRect: CGRect = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
 
@@ -254,11 +401,31 @@ extension ViewController : AVCaptureVideoDataOutputSampleBufferDelegate {
         uiimage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
 
-        let extractedGrayUiImage = self.convertImageToGrayScale(image: uiimage)
-        searchArea.image = extractedGrayUiImage
+//        let extractedGrayUiImage = self.convertImageToGrayScale(image: uiimage)
+//        searchArea.image = extractedGrayUiImage
+        searchArea.image = uiimage
 
-//        let intensities: [CGFloat] = self.grayscaleImageIntensity(image: extractedGrayUiImage) as [CGFloat]
-//        let scanable = Scanable(pixels: intensities, w: 250)
+        let grayCopy = uiimage
+
+        if self.intervalCtrl % 2 == 0 {
+            let intensities = self.grayscaleImageIntensity(image: grayCopy)
+            let cLineLR = LineDetector.cLineLeftRight(pixels: intensities, w: w)
+            if cLineLR["rc"] as! Int == 0 {
+                cLineOverlay.isHidden = false
+                cLineOverlay.frame = CGRect(
+                x: searchArea.frame.origin.x + CGFloat(cLineLR["start"] as! Int),
+                y: searchArea.frame.origin.y,
+                width: CGFloat(cLineLR["end"] as! Int) - CGFloat(cLineLR["start"] as! Int), height: CGFloat(100))
+            } else {
+                cLineOverlay.isHidden = true
+            }
+            if let isLine = cLineLR["isLine"] as? [CGFloat] {
+                plot(a: isLine, b: cLineLR["lines"] as! [[String: CGFloat]],
+                    c: cLineLR["std"] as! [CGFloat], min: -1.5, max: 1.5)
+            }
+        }
+        self.intervalCtrl = self.intervalCtrl + 1
+        self.intervalCtrl = self.intervalCtrl % 64000
 
         // Recognized
 //        let pixelData = ((extractedGrayUiImage.cgImage?.dataProvider)!).data
