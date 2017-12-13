@@ -18,18 +18,13 @@ struct m_RGBColor // My own data-type to hold the picture information
 
 class LnMath {
     static func mean(a: [CGFloat]) -> CGFloat {
-        return a.reduce(0, { r, _a in
-            r + _a
-        }) / CGFloat(a.count)
+        return a.reduce(0, +) / CGFloat(a.count)
     }
 
+    /* std = sqrt(mean(abs(x - x.mean())**2)) */
     static func std(a: [CGFloat]) -> CGFloat {
-        let mean = a.reduce(0, { r, _a in
-            r + _a
-        }) / CGFloat(a.count)
-        let result = sqrt(a.reduce(0.0, { r, _a in
-            r + pow(_a - mean, 2)
-        }) / CGFloat(a.count))
+        let mean = self.mean(a: a)
+        let result = sqrt(self.mean(a: a.map { (_a) -> CGFloat in pow(_a - mean, 2) }))
         return result
     }
     static func stdX(a: [CGFloat], w: Int, h: Int) -> [CGFloat] {
