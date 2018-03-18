@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import re
 import subprocess as sub
 from httplib2 import Http
@@ -158,3 +160,4 @@ elif len(sys.argv) == 2:
     run(sys.argv[1])
 else:
     run_args(sys.argv[1], sys.argv[2])
+
