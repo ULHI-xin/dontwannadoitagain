@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
 import re
+import httplib2
 import subprocess as sub
 from httplib2 import Http
 
-h = Http()
+proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1086)
+h = Http(proxy_info=proxy_info)
 hc = Http('.cache')
 
 
@@ -114,6 +116,8 @@ cfg = {
 
 def run_args(url, dst):
     ck = "__cfduid=d0d4f1422f7ed0333fb6106bf992f3e441488450044"
+    ck = " skipserver=29192-17643_23626-17643; __cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
+    ck = "__cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
     for _ in xrange(1500):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
