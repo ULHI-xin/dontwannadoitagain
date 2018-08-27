@@ -114,11 +114,11 @@ cfg = {
 }
 
 
-def run_args(url, dst):
+def run_args(url, dst, stop=1500):
     ck = "__cfduid=d0d4f1422f7ed0333fb6106bf992f3e441488450044"
     ck = " skipserver=29192-17643_23626-17643; __cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
     ck = "__cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
-    for _ in xrange(1500):
+    for _ in xrange(stop):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
         _download_img(img_url, dst, url[url.rfind('-')+1:])
@@ -128,9 +128,9 @@ def run_args(url, dst):
         url = next_page
 
 
-def run(name):
+def run(name, stop_arg=1500):
     url, dst, ck = cfg[name]
-    for _ in xrange(1500):
+    for _ in xrange(stop_arg):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
         _download_img(img_url, dst, url[url.rfind('-')+1:])
@@ -162,6 +162,11 @@ if len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
     run_img_url_only(sys.argv[3], sys.argv[2])
 elif len(sys.argv) == 2:
     run(sys.argv[1])
+elif len(sys.argv) == 4 and sys.argv[3].startswith('stop='):
+    stop_arg = sys.argv[3]
+    stop_arg = int(stop_arg[5:])
+    print('stop=', stop_arg)
+    run_args(sys.argv[1], sys.argv[2], stop_arg)
 else:
     run_args(sys.argv[1], sys.argv[2])
 
