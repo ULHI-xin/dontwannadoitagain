@@ -31,7 +31,7 @@ def all_img_url_for_manga(manga_url, name, end):
             img_urls = img_url_from_html(html)
             for iu in img_urls:
                 fw.write(iu + '\n')
-    print('All img url scrawled to {}'.format(img_url_file))
+    print('All img url scrawled. cmd: `open "{}"`'.format(img_url_file))
 
 
 # all_img_url_for_manga('http://www.177piczz.info/html/2018/06/2149124.html', 39)

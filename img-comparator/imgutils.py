@@ -12,8 +12,8 @@ hc = Http('.cache')
 
 
 def img_size_from_url(url):
-    print "img size from url:", url
-    for _ in xrange(3):
+    print("img size from url:", url)
+    for _ in range(3):
         try:
             with closing(requests.get(url, stream=True)) as r:
                 size = r.headers.get('content-length')
