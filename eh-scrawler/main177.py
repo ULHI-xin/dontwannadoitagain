@@ -3,6 +3,7 @@
 import re
 import httplib2
 import subprocess as sub
+from datetime import datetime
 from httplib2 import Http
 
 from utils import (html_from_url, )
@@ -32,6 +33,11 @@ def all_img_url_for_manga(manga_url, name, end):
             for iu in img_urls:
                 fw.write(iu + '\n')
     print('All img url scrawled. cmd: `open "{}"`'.format(img_url_file))
+    target_dir = BASEDIR + '/' + datetime.now().strftime('%Y%m%d') + '_' + name
+    p = sub.Popen(['mkdir', '-p', target_dir], stdout=sub.PIPE,
+                  stderr=sub.PIPE)
+    output, errors = p.communicate()
+    print('Target dir created: `{}`'.format(target_dir))
 
 
 # all_img_url_for_manga('http://www.177piczz.info/html/2018/06/2149124.html', 39)
