@@ -111,8 +111,6 @@ def _download_misc(url, dst, cookie):
         return
     extname = url[url.rfind('.'):]
     dst = "/Users/xinzhao/.hehe/" + dst if '/' not in dst else dst
-    if not dst.endswith('/'):
-        dst += "/"
     try:
         with open(dst, 'wb') as f:
             f.write(ctnt)
@@ -191,15 +189,11 @@ def run_img_url_only(dst, start_url):
 
 import sys
 
-if len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
-    run_img_url_only(sys.argv[3], sys.argv[2])
-elif len(sys.argv) == 2:
-    run(sys.argv[1])
-elif len(sys.argv) == 4 and sys.argv[3].startswith('stop='):
-    stop_arg = sys.argv[3]
-    stop_arg = int(stop_arg[5:])
-    print('stop=', stop_arg)
-    run_args(sys.argv[1], sys.argv[2], stop_arg)
-else:
-    run_args(sys.argv[1], sys.argv[2])
-
+cookie = 'AVS=0g6p5790k40jbn4ioosg3mt493; _ga=GA1.2.1182947895.1563686425; _gid=GA1.2.1619077981.1563686425; popundr=1; __atuvc=10%7C30; __atuvs=5d33fec4e4118182009; GED_PLAYLIST_ACTIVITY=W3sidSI6Ik83NlkiLCJ0c2wiOjE1NjM2OTA4NDAsIm52IjowLCJ1cHQiOjE1NjM2ODkwMDIsImx0IjoxNTYzNjg5NzcxfSx7InUiOiJ1ejVpIiwidHNsIjoxNTYzNjkwODM5LCJudiI6MSwidXB0IjoxNTYzNjkwMzMxLCJsdCI6MTU2MzY5MDgzOX0seyJ1IjoiRzV1ZCIsInRzbCI6MTU2MzY5MDgzOCwibnYiOjAsInVwdCI6MTU2MzY4ODk5NywibHQiOjE1NjM2ODg5OTd9XQ..'
+mp4_url = 'https://media3.mrdeepfakes.com/media/videos/h264/4087_480p.mp4'
+dst = '/Users/xinzhao/Downloads/pg.mp4'
+_download_misc(
+    mp4_url,
+    dst,
+    cookie
+)
