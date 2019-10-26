@@ -1,11 +1,15 @@
 #!/usr/bin/python
+# coding: utf-8
 
 import re
 import httplib2
 import subprocess as sub
 from httplib2 import Http
 
-proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1086)
+from utils import download_numbered_img
+from platform.eh import parse_index_page_html
+
+proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1082)
 h = Http(proxy_info=proxy_info)
 hc = Http('.cache')
 
@@ -56,39 +60,6 @@ def _next_urls_from_html(html):
     # img_url = spliteds[3]
     print "next page:", next_page
     return next_page, img_url
-
-
-def _download_img(url, dst, idx):
-    print "download ", url
-    ctnt = None
-    for _ in xrange(3):
-        print "_try ", _
-        try:
-            resp, ctnt = hc.request(url)
-            if '200' == resp.get('status'):
-                break
-        except Exception as e:
-            print "Download failed: ", e
-            continue
-
-    # print ctnt
-    if ctnt is None:
-        print "Failed img:", url
-        return
-    extname = url[url.rfind('.'):]
-    filename = str(idx) + extname
-    dst = "/Users/xinzhao/.hehe/" + dst if '/' not in dst else dst
-    if not dst.endswith('/'):
-        dst += "/"
-    try:
-        with open(dst + filename, 'wb') as f:
-            f.write(ctnt)
-    except IOError:
-        p = sub.Popen(['mkdir', '-p', dst], stdout=sub.PIPE,
-                      stderr=sub.PIPE)
-        output, errors = p.communicate()
-        with open(dst + filename, 'wb') as f:
-            f.write(ctnt)
 
 
 def _download_misc(url, dst, cookie):
@@ -154,7 +125,7 @@ def run_args(url, dst, stop=1500):
     for _ in xrange(stop):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
-        _download_img(img_url, dst, url[url.rfind('-')+1:])
+        download_numbered_img(img_url, dst, url[url.rfind('-') + 1:])
         if next_page == url:
             print "FINISHED!"
             break
@@ -166,7 +137,7 @@ def run(name, stop_arg=1500):
     for _ in xrange(stop_arg):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
-        _download_img(img_url, dst, url[url.rfind('-')+1:])
+        download_numbered_img(img_url, dst, url[url.rfind('-') + 1:])
         if next_page == url:
             print "FINISHED!"
             break
@@ -189,17 +160,24 @@ def run_img_url_only(dst, start_url):
             start_url = next_page
 
 
-import sys
+if __name__ == "__main__":
+    import sys
 
-if len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
-    run_img_url_only(sys.argv[3], sys.argv[2])
-elif len(sys.argv) == 2:
-    run(sys.argv[1])
-elif len(sys.argv) == 4 and sys.argv[3].startswith('stop='):
-    stop_arg = sys.argv[3]
-    stop_arg = int(stop_arg[5:])
-    print('stop=', stop_arg)
-    run_args(sys.argv[1], sys.argv[2], stop_arg)
-else:
-    run_args(sys.argv[1], sys.argv[2])
+    if len(sys.argv) == 2:
+        ck = "__cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
+        page, cookie = _html_from_url(sys.argv[1], ck)
+        start_url, title = parse_index_page_html(page)
+        run_args(start_url, title)
+
+    elif len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
+        run_img_url_only(sys.argv[3], sys.argv[2])
+    elif len(sys.argv) == 2:
+        run(sys.argv[1])
+    elif len(sys.argv) == 4 and sys.argv[3].startswith('stop='):
+        stop_arg = sys.argv[3]
+        stop_arg = int(stop_arg[5:])
+        print('stop=', stop_arg)
+        run_args(sys.argv[1], sys.argv[2], stop_arg)
+    else:
+        run_args(sys.argv[1], sys.argv[2])
 

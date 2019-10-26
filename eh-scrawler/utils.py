@@ -5,7 +5,8 @@ import httplib2
 import subprocess as sub
 from httplib2 import Http
 
-proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1086)
+# proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1086)
+proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1082)
 h = Http(proxy_info=proxy_info)
 hc = Http('.cache')
 
@@ -28,13 +29,13 @@ def html_from_url(url, cookie):
     return None, None
 
 
-def download_img(url, dst, idx):
+def download_numbered_img(url, dst, idx):
     print("download ", url)
     ctnt = None
     for _ in xrange(3):
         print "_try ", _
         try:
-            resp, ctnt = hc.request(url)
+            resp, ctnt = h.request(url)
             if '200' == resp.get('status'):
                 break
         except Exception as e:

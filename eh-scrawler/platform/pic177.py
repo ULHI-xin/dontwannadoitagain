@@ -1,4 +1,3 @@
-#!/usr/bin/python
 
 import re
 import httplib2
@@ -38,10 +37,4 @@ def all_img_url_for_manga(manga_url, name, end):
                   stderr=sub.PIPE)
     output, errors = p.communicate()
     print('Target dir created: `{}`'.format(target_dir))
-
-
-# all_img_url_for_manga('http://www.177piczz.info/html/2018/06/2149124.html', 39)
-
-
-import sys
-all_img_url_for_manga(sys.argv[1], sys.argv[2], int(sys.argv[3]))
+    return img_url_file, target_dir
