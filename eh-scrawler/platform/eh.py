@@ -2,7 +2,7 @@
 import re
 
 
-def parse_index_page_html(html_str):
+def parse_index_page_info(html_str):
     found = re.findall("<h1[^>]+>([^<]+)?</h1>", html_str)
     print(found)
     title = found[1].decode('utf-8') if (len(found) > 1 and found[1]) else found[0].decode('utf-8')

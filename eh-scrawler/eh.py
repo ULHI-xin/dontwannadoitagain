@@ -7,7 +7,7 @@ import subprocess as sub
 from httplib2 import Http
 
 from utils import download_numbered_img
-from platform.eh import parse_index_page_html
+from platform.eh import parse_index_page_info
 
 proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1082)
 h = Http(proxy_info=proxy_info)
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         ck = "__cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
         page, cookie = _html_from_url(sys.argv[1], ck)
-        start_url, title = parse_index_page_html(page)
+        start_url, title = parse_index_page_info(page)
         run_args(start_url, title)
 
     elif len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
