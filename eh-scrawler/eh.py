@@ -169,6 +169,13 @@ if __name__ == "__main__":
         start_url, title = parse_index_page_info(page)
         run_args(start_url, title)
 
+    elif len(sys.argv) == 3 and sys.argv[2].startswith('start='):
+        ck = "__cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
+        start_url = sys.argv[2][6:]
+        page, cookie = _html_from_url(sys.argv[1], ck)
+        _, title = parse_index_page_info(page)
+        run_args(start_url, title)
+
     elif len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
         run_img_url_only(sys.argv[3], sys.argv[2])
     elif len(sys.argv) == 2:
