@@ -14,7 +14,7 @@ for r, d, f in os.walk(root):
         if not _d or _d == 'bak':
             continue
         zipname = _d.decode("utf-8")
-        zipname = zipname.replace(" ", "_")
+        zipname = zipname.replace(" ", "_").replace("/", "-")
         if not _d.startswith(datelabel):
             zipname = datelabel + "_" + zipname
         zipname = zipname + ".zip"
