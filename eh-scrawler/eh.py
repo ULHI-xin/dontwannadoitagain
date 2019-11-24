@@ -164,7 +164,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) == 2:
-        ck = "__cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
+        ck = "nw=1; __cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
         page, cookie = _html_from_url(sys.argv[1], ck)
         start_url, title = parse_index_page_info(page)
         run_args(start_url, title)
