@@ -15,8 +15,8 @@ for r, d, f in os.walk(root):
             continue
         zipname = _d.decode("utf-8")
         zipname = zipname.replace(" ", "_").replace("/", "-")
-        if not _d.startswith(datelabel):
-            zipname = datelabel + "_" + zipname
+        # if not _d.startswith(datelabel):
+        #     zipname = datelabel + "_" + zipname
         zipname = zipname + ".zip"
 
         args = ["zip", "-r", root + "/" + zipname, root + "/" + _d]
