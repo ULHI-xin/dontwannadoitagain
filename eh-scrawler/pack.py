@@ -9,7 +9,6 @@ from datetime import datetime
 
 root = sys.argv[1]
 for r, d, f in os.walk(root):
-    datelabel = datetime.now().strftime('%Y%m%d')
     for _d in d:
         if not _d or _d == 'bak':
             continue
