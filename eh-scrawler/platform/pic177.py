@@ -22,12 +22,17 @@ def parse_index_page_info(html_str):
 
 
 def img_url_from_html(html_str):
+    # print(html_str)
     found = re.findall(r'<img src="http://img.177piczz.info/uploads/[^"]+"', html_str)
     if found:
         return [x[x.find('"') + 1:-1] for x in found]
     found = re.findall(r'<img src="http://img.177pic.info/uploads/[^"]+"', html_str)
     if found:
         return [x[x.find('"') + 1:-1] for x in found]
+    found = re.findall(r' data-lazy-src="http://img.177pic.pw/uploads/[^"]+"', html_str)
+    if found:
+        return [x[x.find('"') + 1:-1] for x in found]
+    # print(found)
     return found
 
 
