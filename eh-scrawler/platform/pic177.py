@@ -51,7 +51,7 @@ def all_img_url_for_manga(manga_url):
             for iu in img_urls:
                 fw.write(iu + '\n')
     print('All img url scrawled. cmd: `open "{}"`'.format(img_url_file))
-    target_dir = BASEDIR + '/' + datetime.now().strftime('%Y%m%d') + '_' + name
+    target_dir = BASEDIR + '/' + name
     p = sub.Popen(['mkdir', '-p', target_dir], stdout=sub.PIPE,
                   stderr=sub.PIPE)
     output, errors = p.communicate()
