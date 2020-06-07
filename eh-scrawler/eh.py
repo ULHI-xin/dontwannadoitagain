@@ -176,15 +176,17 @@ if __name__ == "__main__":
         _, title = parse_index_page_info(page)
         run_args(start_url, title)
 
-    elif len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
-        run_img_url_only(sys.argv[3], sys.argv[2])
-    elif len(sys.argv) == 2:
-        run(sys.argv[1])
-    elif len(sys.argv) == 4 and sys.argv[3].startswith('stop='):
-        stop_arg = sys.argv[3]
+    elif len(sys.argv) > 2 and any(arg.startswith('stop=') for arg in sys.argv):
+        stop_arg = next(arg for arg in sys.argv if arg.startswith('stop='))
         stop_arg = int(stop_arg[5:])
         print('stop=', stop_arg)
-        run_args(sys.argv[1], sys.argv[2], stop_arg)
+        ck = "nw=1; __cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
+        page, cookie = _html_from_url(sys.argv[1], ck)
+        start_url, title = parse_index_page_info(page)
+        run_args(start_url, title, stop=stop_arg)
+    elif len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
+        run_img_url_only(sys.argv[3], sys.argv[2])
+
     else:
         run_args(sys.argv[1], sys.argv[2])
 
