@@ -1,14 +1,23 @@
 #!/usr/bin/python
-
+import os
 import re
 import httplib2
 import subprocess as sub
 from httplib2 import Http
+from contextlib import contextmanager
 
 # proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1086)
 proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1082)
 h = Http(proxy_info=proxy_info)
 hc = Http('.cache')
+
+
+@contextmanager
+def cd(directory):
+    original_cwd = os.getcwd()
+    os.chdir(directory)
+    yield
+    os.chdir(original_cwd)
 
 
 def html_from_url(url, cookie):

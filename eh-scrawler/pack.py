@@ -6,6 +6,8 @@ import sys
 import subprocess
 from datetime import datetime
 
+from utils import cd
+
 
 root = sys.argv[1]
 for r, d, f in os.walk(root):
@@ -18,6 +20,7 @@ for r, d, f in os.walk(root):
         #     zipname = datelabel + "_" + zipname
         zipname = zipname + ".zip"
 
-        args = ["zip", "-r", root + "/" + zipname, root + "/" + _d]
-        print(args)
-        subprocess.call(args)
+        with cd(root):
+            args = ["zip", "-r", zipname, _d]
+            print(args)
+            subprocess.call(args)

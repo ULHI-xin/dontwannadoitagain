@@ -163,14 +163,14 @@ def run_img_url_only(dst, start_url):
 if __name__ == "__main__":
     import sys
 
+    ck = "nw=1; __cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
+
     if len(sys.argv) == 2:
-        ck = "nw=1; __cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
         page, cookie = _html_from_url(sys.argv[1], ck)
         start_url, title = parse_index_page_info(page)
         run_args(start_url, title)
 
     elif len(sys.argv) == 3 and sys.argv[2].startswith('start='):
-        ck = "__cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
         start_url = sys.argv[2][6:]
         page, cookie = _html_from_url(sys.argv[1], ck)
         _, title = parse_index_page_info(page)
@@ -180,7 +180,6 @@ if __name__ == "__main__":
         stop_arg = next(arg for arg in sys.argv if arg.startswith('stop='))
         stop_arg = int(stop_arg[5:])
         print('stop=', stop_arg)
-        ck = "nw=1; __cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
         page, cookie = _html_from_url(sys.argv[1], ck)
         start_url, title = parse_index_page_info(page)
         run_args(start_url, title, stop=stop_arg)
