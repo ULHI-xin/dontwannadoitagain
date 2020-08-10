@@ -124,18 +124,23 @@ function sup {
     sudo supdctl $1 $2-pubsub
 }
 
-function supminlx {
+
+function supmin {
     sup stop emma
     sup stop kaylee
+    sup stop lexie
     sup stop noah
+    sup stop mia
     sup start bryo
     sup start forum
-    sup start lexie
+    # sup start lexie
+    sup start kaylee
     sudo supdctl stop mia-webrpc
     sudo supdctl stop mia-www
     sudo supdctl stop zoe-www
     sudo supdctl stop thumbor
     sudo supdctl stop bryo-etad
     sudo supdctl stop forum-etad
-    sudo supdctl stop lexie-etad
+    # sudo supdctl stop lexie-etad
+    sudo supdctl stop kaylee-etad
 }
