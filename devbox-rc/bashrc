@@ -144,3 +144,5 @@ function supmin {
     # sudo supdctl stop lexie-etad
     sudo supdctl stop kaylee-etad
 }
+
+export LC_ALL=C
