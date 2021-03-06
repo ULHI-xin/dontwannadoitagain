@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import os
+import re
 import sys
 import subprocess
 from datetime import datetime
@@ -14,7 +15,11 @@ for r, d, f in os.walk(root):
     for _d in d:
         if not _d or _d == 'bak':
             continue
-        zipname = _d.decode("utf-8")
+        zipname = _d.decode("utf-8").strip()
+        zipname = re.sub(r'^\([^)]+\)', '', zipname).strip()
+        author_name = re.findall(r'^\[[^]]+\]', zipname)
+        if author_name:
+            zipname = (zipname.replace(author_name[0], '') + author_name[0]).strip()
         zipname = zipname.replace(" ", "_").replace("/", "-")
         # if not _d.startswith(datelabel):
         #     zipname = datelabel + "_" + zipname
