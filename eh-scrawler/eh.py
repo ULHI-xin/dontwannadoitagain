@@ -170,22 +170,26 @@ if __name__ == "__main__":
         start_url, title = parse_index_page_info(page)
         run_args(start_url, title)
 
-    elif len(sys.argv) == 3 and sys.argv[2].startswith('start='):
-        start_url = sys.argv[2][6:]
-        page, cookie = _html_from_url(sys.argv[1], ck)
-        _, title = parse_index_page_info(page)
-        run_args(start_url, title)
-
-    elif len(sys.argv) > 2 and any(arg.startswith('stop=') for arg in sys.argv):
-        stop_arg = next(arg for arg in sys.argv if arg.startswith('stop='))
-        stop_arg = int(stop_arg[5:])
-        print('stop=', stop_arg)
-        page, cookie = _html_from_url(sys.argv[1], ck)
-        start_url, title = parse_index_page_info(page)
-        run_args(start_url, title, stop=stop_arg)
-    elif len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
-        run_img_url_only(sys.argv[3], sys.argv[2])
-
     else:
-        run_args(sys.argv[1], sys.argv[2])
+        stop_arg, start_url = 0, ''
+        if len(sys.argv) >= 3 and any(arg.startswith('start=') for arg in sys.argv):
+            start_url = next(arg for arg in sys.argv if arg.startswith('start='))[6:]
+            print('start=', start_url)
+        if len(sys.argv) > 2 and any(arg.startswith('stop=') for arg in sys.argv):
+            stop_arg = next(arg for arg in sys.argv if arg.startswith('stop='))
+            stop_arg = int(stop_arg[5:])
+            print('stop=', stop_arg)
+        page, cookie = _html_from_url(sys.argv[1], ck)
+        parsed_start_url, title = parse_index_page_info(page)
+        start_url = start_url or parsed_start_url
+        if stop_arg:
+            run_args(start_url, title, stop=stop_arg)
+        else:
+            run_args(start_url, title)
+    #
+    # elif len(sys.argv) == 4 and sys.argv[1] == 'no-dl':
+    #     run_img_url_only(sys.argv[3], sys.argv[2])
+    #
+    # else:
+    #     run_args(sys.argv[1], sys.argv[2])
 
