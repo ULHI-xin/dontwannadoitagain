@@ -1,6 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8
 
+import os
 import re
 import httplib2
 import subprocess as sub
@@ -9,30 +10,31 @@ from httplib2 import Http
 from utils import download_numbered_img
 from platform.eh import parse_index_page_info
 
-proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1082)
+proxy_port = os.environ.get('SOCKS5_PORT') or 8002
+proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', proxy_port)
 h = Http(proxy_info=proxy_info)
 hc = Http('.cache')
 
 
 def _html_from_url(url, cookie):
-    print "visit url", url
-    for _ in xrange(5):
-        print "_try ", _
+    print("visit url", url)
+    for _ in range(5):
+        print("_try ", _)
         try:
             headers = {'Cookie': cookie}
             resp, ctnt = h.request(url, headers=headers)
             if '200' == resp.get('status'):
-                return ctnt, resp.get('set-cookie', cookie)
+                return ctnt.decode('utf8'), resp.get('set-cookie', cookie)
             ## print resp, ctnt
         except Exception as e:
-            print '%r' % e
+            print('%r' % e)
             continue
 
 
 def _next_urls_from_html(html):
     html = html.replace(' id="img"', '')
     html = re.sub(' onclick="[^"]+"', '', html)
-    print "find urls"
+    print("find urls")
     # print html
     # pat = '<a [^>]+><img src="[^"]+\.[a-z][a-z][a-z]" style="[^"]+"[^/]+ ?/></a>'
     pat = '<a [^>]+><img id="img" [^>]+></a>'
@@ -54,31 +56,31 @@ def _next_urls_from_html(html):
             next_page = re.findall('href="[^"]+"', tag)[0][6:-1]
             img_url = re.findall('src="[^"]+"', tag)[0][5:-1]
         except IndexError as e:
-            print html
+            print(html)
             raise e
     # next_page = spliteds[1]
     # img_url = spliteds[3]
-    print "next page:", next_page
+    print("next page:", next_page)
     return next_page, img_url
 
 
 def _download_misc(url, dst, cookie):
-    print "download ", url
+    print("download ", url)
     ctnt = None
-    for _ in xrange(3):
-        print "_try ", _
+    for _ in range(3):
+        print("_try ", _)
         try:
             headers = {'Cookie': cookie}
             resp, ctnt = hc.request(url, headers=headers)
             if '200' == resp.get('status'):
                 break
         except Exception as e:
-            print "Download failed: ", e
+            print("Download failed: ", e)
             continue
 
     # print ctnt
     if ctnt is None:
-        print "Failed img:", url
+        print("Failed img:", url)
         return
     extname = url[url.rfind('.'):]
     dst = "/Users/xinzhao/.hehe/" + dst if '/' not in dst else dst
@@ -122,24 +124,24 @@ def run_args(url, dst, stop=1500):
     ck = "__cfduid=d0d4f1422f7ed0333fb6106bf992f3e441488450044"
     ck = " skipserver=29192-17643_23626-17643; __cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
     ck = "__cfduid=d8c49442195dc4df6d0a47179b2fb273f1523767719"
-    for _ in xrange(stop):
+    for _ in range(stop):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
         download_numbered_img(img_url, dst, url[url.rfind('-') + 1:])
         if next_page == url:
-            print "FINISHED!"
+            print("FINISHED!")
             break
         url = next_page
 
 
 def run(name, stop_arg=1500):
     url, dst, ck = cfg[name]
-    for _ in xrange(stop_arg):
+    for _ in range(stop_arg):
         page, cookie = _html_from_url(url, ck)
         next_page, img_url = _next_urls_from_html(page)
         download_numbered_img(img_url, dst, url[url.rfind('-') + 1:])
         if next_page == url:
-            print "FINISHED!"
+            print("FINISHED!")
             break
         url = next_page
 
@@ -150,12 +152,12 @@ def run_img_url_only(dst, start_url):
     ck = "tips=1; __utma=185428086.1372950640.1477723685.1478415126.1480141868.5; __utmc=185428086; __utmz=185428086.1477723685.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); eap_45442=1"
     ck = "skipserver=18683-17302_14188-17301_17879-17301; __cfduid=d0acb48934e768c96bb08275951098e0c1494255264; nw=1; eap_45442=1"
     with open(dst, 'a') as fa:
-        for _ in xrange(1500):
+        for _ in range(1500):
             page, cookie = _html_from_url(start_url, ck)
             next_page, img_url = _next_urls_from_html(page)
             fa.write('%s\n' % img_url)
             if next_page == start_url:
-                print "FINISHED!"
+                print("FINISHED!")
                 break
             start_url = next_page
 

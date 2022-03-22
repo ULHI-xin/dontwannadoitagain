@@ -7,7 +7,8 @@ from httplib2 import Http
 from contextlib import contextmanager
 
 # proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1086)
-proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', 1082)
+proxy_port = os.environ.get('SOCKS5_PORT') or 8002
+proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_SOCKS5, '127.0.0.1', proxy_port)
 h = Http(proxy_info=proxy_info)
 hc = Http('.cache')
 
@@ -22,7 +23,7 @@ def cd(directory):
 
 def html_from_url(url, cookie):
     print("visit url", url)
-    for _ in xrange(5):
+    for _ in range(5):
         print("_try ", _)
         try:
             if cookie is not None:
@@ -33,7 +34,7 @@ def html_from_url(url, cookie):
             if '200' == resp.get('status'):
                 return ctnt, resp.get('set-cookie', cookie)
         except Exception as e:
-            print '%r' % e
+            print('%r' % e)
             continue
     return None, None
 
@@ -41,19 +42,19 @@ def html_from_url(url, cookie):
 def download_numbered_img(url, dst, idx):
     print("download ", url)
     ctnt = None
-    for _ in xrange(3):
-        print "_try ", _
+    for _ in range(3):
+        print("_try ", _)
         try:
             resp, ctnt = h.request(url)
             if '200' == resp.get('status'):
                 break
         except Exception as e:
-            print "Download failed: ", e
+            print("Download failed: ", e)
             continue
 
     # print ctnt
     if ctnt is None:
-        print "Failed img:", url
+        print("Failed img:", url)
         return
     extname = url[url.rfind('.'):]
     filename = str(idx) + extname
