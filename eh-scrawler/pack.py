@@ -20,7 +20,8 @@ for r, d, f in os.walk(root):
         author_name = re.findall(r'^\[[^]]+]', zipname)
         if author_name:
             zipname = (zipname.replace(author_name[0], '') + author_name[0]).strip()
-        zipname = zipname.replace(" ", "_").replace("/", "-").replace("/", "-").replace('?', '')
+
+        zipname = zipname.replace(" ", "_").replace("/", "-").replace("/", "-").replace('?', '').replace(':', '_')
         # if not _d.startswith(datelabel):
         #     zipname = datelabel + "_" + zipname
         zipname = zipname + ".zip"
